@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  sanjeevani-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sanjeevani-command-center
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - FLASK_ENV=production
+      - BBOX_PROXIMITY_PX=250
+      - LORA_RSSI_THRESHOLD=-70.0
+      - LORA_SECRET_KEY=sanjeevani_lora_master_key_2026
+      - LORA_DAILY_PASSCODE=RANGER_ALPHA_99
+    volumes:
+      - ./evidence:/app/evidence
+      - ./Dataset Samples:/app/Dataset Samples:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
