@@ -1,18 +1,40 @@
 # config.py
-
 import os
+from pathlib import Path
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+try:
+    from dotenv import load_dotenv
+    # Base directory of the repository
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    env_path = BASE_DIR / ".env"
+    if env_path.exists():
+        load_dotenv(dotenv_path=env_path)
+    else:
+        load_dotenv()
+except ImportError:
+    BASE_DIR = Path(__file__).resolve().parent.parent
 
-YOLO_MODEL_PATH = os.path.join(PROJECT_ROOT, "best.pt")
-GUNSHOT_MODEL_PATH = os.path.join(PROJECT_ROOT, "gunshot_model_v3.h5")
-MEAN_PATH = os.path.join(PROJECT_ROOT, "train_mean.npy")
-STD_PATH = os.path.join(PROJECT_ROOT, "train_std.npy")
+PROJECT_ROOT = os.getenv("PROJECT_ROOT", str(BASE_DIR))
 
-DAILY_PASSCODE = "9382"  # Change daily
+# Model and artifact paths
+YOLO_MODEL_PATH = os.getenv("YOLO_MODEL_PATH", os.path.join(PROJECT_ROOT, "best.pt"))
+GUNSHOT_MODEL_PATH = os.getenv("GUNSHOT_MODEL_PATH", os.path.join(PROJECT_ROOT, "gunshot_model_v3.h5"))
+MEAN_PATH = os.getenv("MEAN_PATH", os.path.join(PROJECT_ROOT, "train_mean.npy"))
+STD_PATH = os.getenv("STD_PATH", os.path.join(PROJECT_ROOT, "train_std.npy"))
 
-LORA_SECRET_KEY = "RANGER_SECRET_2025"
+# Proximity Thresholds
+BBOX_PROXIMITY_PX = int(os.getenv("BBOX_PROXIMITY_PX", 150))
+LORA_RSSI_THRESHOLD = float(os.getenv("LORA_RSSI_THRESHOLD", -70))
 
-PROXIMITY_RSSI_THRESHOLD = -70  # adjust based on testing
+# Security & LoRa Handshake
+DAILY_PASSCODE = os.getenv("DAILY_PASSCODE", "9382")
+LORA_SECRET_KEY = os.getenv("LORA_SECRET_KEY", "RANGER_SECRET_2025")
 
-SERVER_PORT = 5000
+# Twilio Alerts Configuration
+TWILIO_SID = os.getenv("TWILIO_SID", "")
+TWILIO_TOKEN = os.getenv("TWILIO_TOKEN", "")
+TWILIO_FROM = os.getenv("TWILIO_FROM", "")
+TWILIO_TO = os.getenv("TWILIO_TO", "")
+
+# Server
+SERVER_PORT = int(os.getenv("PORT", 5000))
