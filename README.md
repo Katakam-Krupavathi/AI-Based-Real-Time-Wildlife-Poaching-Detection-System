@@ -1,4 +1,4 @@
-# 🌿 SANJEEVANI: AI-Based Real-Time Wildlife Poaching Detection System
+# 🌿 AI-Based Real-Time Wildlife Poaching Detection System
 
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.5.1-EE4C2C.svg)](https://pytorch.org/)
@@ -8,7 +8,7 @@
 [![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF.svg)](https://github.com/Katakam-Krupavathi/AI-Based-Real-Time-Wildlife-Poaching-Detection-System/actions)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](#)
 
-> **SANJEEVANI** is an autonomous, multi-modal IoT surveillance and early warning platform designed to protect endangered wildlife from illegal poaching incursions. It combines computer vision (YOLOv8), bioacoustic gunshot analysis (deep audio CNN), cryptographic LoRa ranger deconfliction, multi-frame spatial tracking, and interactive tactical GIS mapping.
+> An autonomous, multi-modal IoT surveillance and early warning platform designed to protect endangered wildlife from illegal poaching incursions. It combines computer vision (YOLOv8), bioacoustic gunshot analysis (deep audio CNN), cryptographic LoRa ranger deconfliction, multi-frame spatial tracking, and interactive tactical GIS mapping.
 
 ---
 
@@ -25,7 +25,7 @@ flowchart TD
         A4["🛰️ GPS Telemetry Unit"]
     end
 
-    subgraph CentralServer["🖥️ SANJEEVANI Central Command Server"]
+    subgraph CentralServer["🖥️ Central Command Server"]
         B1["🌐 REST Ingestion Engine (/process, /process_multimodal)"]
         
         subgraph AIInference["🧠 Multi-Modal AI Inference Pipeline"]
@@ -211,7 +211,7 @@ http://127.0.0.1:5000
 
 ## 🐳 Docker Deployment
 
-To launch the complete SANJEEVANI surveillance stack in a containerized environment:
+To launch the complete surveillance command stack in a containerized environment:
 
 ```bash
 # Build and start container
