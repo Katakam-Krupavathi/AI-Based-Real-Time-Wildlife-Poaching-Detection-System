@@ -1,5 +1,5 @@
 import math
-from config import PROXIMITY_THRESHOLD
+from config import BBOX_PROXIMITY_PX
 
 
 def distance(a, b):
@@ -50,14 +50,14 @@ def analyze_detections(detections):
         # Check if human has jacket (ranger)
         for jacket in jackets:
 
-            if distance(human, jacket) < PROXIMITY_THRESHOLD:
+            if distance(human, jacket) < BBOX_PROXIMITY_PX:
                 is_ranger = True
                 break
 
         # Check if human has gun
         for gun in guns:
 
-            if distance(human, gun) < PROXIMITY_THRESHOLD:
+            if distance(human, gun) < BBOX_PROXIMITY_PX:
                 is_armed = True
                 break
 
