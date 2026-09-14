@@ -37,18 +37,12 @@ def is_proximate(human_item, other_item, threshold=BBOX_PROXIMITY_PX):
 
 def analyze_detections(detections):
     """
-    detections format:
-    [
-        {"label": "human", "center": (x,y), "conf": 0.87, "box": [x1, y1, x2, y2]},
-        {"label": "gun", "center": (x,y), "conf": 0.61, "box": [x1, y1, x2, y2]},
-        {"label": "jacket", "center": (x,y), "conf": 0.92, "box": [x1, y1, x2, y2]}
-    ]
+    Analyzes visual detections and computes confidence-weighted threat signatures.
     """
     humans = []
     jackets = []
     guns = []
 
-    # Separate detections by class
     for d in detections:
         label = d.get("label", "")
         if label == "human":
@@ -60,43 +54,129 @@ def analyze_detections(detections):
 
     events = []
 
-    # Analyze each detected human
     for human in humans:
         is_ranger = False
         is_armed = False
+        h_conf = human.get("conf", 0.8)
+        ranger_conf = 0.0
+        armed_conf = 0.0
 
         # Check if human is wearing a ranger jacket
         for jacket in jackets:
             if is_proximate(human, jacket, BBOX_PROXIMITY_PX):
                 is_ranger = True
+                ranger_conf = max(ranger_conf, jacket.get("conf", 0.8))
                 break
 
         # Check if human has a gun
         for gun in guns:
             if is_proximate(human, gun, BBOX_PROXIMITY_PX):
                 is_armed = True
+                armed_conf = max(armed_conf, gun.get("conf", 0.8))
                 break
 
         h_loc = human["center"] if isinstance(human, dict) else human
+        track_id = human.get("track_id", None)
+        is_new_alert = human.get("is_new_alert", True)
 
-        # Determine event type
         if is_ranger:
+            fused_conf = (h_conf + ranger_conf) / 2.0
             events.append({
                 "type": "RANGER",
-                "confidence": "LOW",
-                "location": h_loc
+                "urgency": "INFO",
+                "confidence_score": round(float(fused_conf), 4),
+                "confidence_pct": f"{fused_conf * 100:.1f}%",
+                "location": h_loc,
+                "track_id": track_id,
+                "is_new_alert": is_new_alert,
+                "description": "Verified Forest Ranger Patrol"
             })
         elif is_armed:
+            fused_conf = round(float(0.4 * h_conf + 0.6 * armed_conf), 4)
             events.append({
                 "type": "ARMED_POACHER",
-                "confidence": "HIGH",
-                "location": h_loc
+                "urgency": "CRITICAL",
+                "confidence_score": fused_conf,
+                "confidence_pct": f"{fused_conf * 100:.1f}%",
+                "location": h_loc,
+                "track_id": track_id,
+                "is_new_alert": is_new_alert,
+                "description": f"Armed Poacher Detected (Gun: {armed_conf*100:.1f}%, Human: {h_conf*100:.1f}%)"
             })
         else:
+            fused_conf = round(float(h_conf), 4)
             events.append({
                 "type": "POACHER_EVENT",
-                "confidence": "MEDIUM",
-                "location": h_loc
+                "urgency": "HIGH",
+                "confidence_score": fused_conf,
+                "confidence_pct": f"{fused_conf * 100:.1f}%",
+                "location": h_loc,
+                "track_id": track_id,
+                "is_new_alert": is_new_alert,
+                "description": f"Unauthorized Human in Protected Zone (Conf: {h_conf*100:.1f}%)"
             })
 
     return events
+
+
+def fuse_multimodal_threat(vision_events, gunshot_detected=False, gunshot_prob=0.0):
+    """
+    Combines visual object analysis and acoustic gunshot classifier into a unified
+    multi-modal threat score and priority tier.
+    """
+    has_armed_poacher = any(e["type"] == "ARMED_POACHER" for e in vision_events)
+    has_unarmed_poacher = any(e["type"] == "POACHER_EVENT" for e in vision_events)
+    has_ranger = any(e["type"] == "RANGER" for e in vision_events)
+
+    max_vis_conf = max([e.get("confidence_score", 0.0) for e in vision_events], default=0.0)
+
+    if has_armed_poacher and gunshot_detected:
+        # Fused multi-modal active combat / poaching incident
+        fused_score = min(1.0, 0.5 * max_vis_conf + 0.5 * gunshot_prob + 0.1)
+        return {
+            "decision": "TIER_1_CRITICAL_ACTIVE_POACHING",
+            "urgency": "CRITICAL",
+            "fused_score": round(float(fused_score), 4),
+            "summary": f"🚨 CRITICAL: Active Armed Poaching with Gunfire (Vision: {max_vis_conf*100:.1f}%, Audio: {gunshot_prob*100:.1f}%)",
+            "requires_immediate_dispatch": True
+        }
+    elif has_armed_poacher:
+        return {
+            "decision": "TIER_2_ARMED_POACHER_VISUAL",
+            "urgency": "HIGH",
+            "fused_score": round(float(max_vis_conf), 4),
+            "summary": f"⚠️ HIGH ALERT: Armed Poacher Sighted (Conf: {max_vis_conf*100:.1f}%)",
+            "requires_immediate_dispatch": True
+        }
+    elif gunshot_detected:
+        return {
+            "decision": "TIER_2_ACOUSTIC_GUNSHOT_ALERT",
+            "urgency": "HIGH",
+            "fused_score": round(float(gunshot_prob), 4),
+            "summary": f"🔊 HIGH ALERT: Acoustic Gunshot Detected (Acoustic Conf: {gunshot_prob*100:.1f}%)",
+            "requires_immediate_dispatch": True
+        }
+    elif has_unarmed_poacher:
+        return {
+            "decision": "TIER_3_SUSPECTED_POACHER_INTRUSION",
+            "urgency": "MEDIUM",
+            "fused_score": round(float(max_vis_conf), 4),
+            "summary": f"⚠️ ALERT: Unauthorized Intruder in Sanctuary (Conf: {max_vis_conf*100:.1f}%)",
+            "requires_immediate_dispatch": True
+        }
+    elif has_ranger:
+        return {
+            "decision": "TIER_4_RANGER_PATROL_MONITORED",
+            "urgency": "INFO",
+            "fused_score": round(float(max_vis_conf), 4),
+            "summary": f"🛡️ Ranger Patrol Verified (Conf: {max_vis_conf*100:.1f}%)",
+            "requires_immediate_dispatch": False
+        }
+    else:
+        return {
+            "decision": "TIER_4_NO_THREAT",
+            "urgency": "NONE",
+            "fused_score": 0.0,
+            "summary": "🌿 Sector Clear / Wildlife Normal",
+            "requires_immediate_dispatch": False
+        }
