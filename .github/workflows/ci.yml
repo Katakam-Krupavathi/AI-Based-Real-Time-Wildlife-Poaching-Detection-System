@@ -1,4 +1,4 @@
-name: SANJEEVANI CI / Automated Verification
+name: CI / Automated Surveillance Verification
 
 on:
   push:
