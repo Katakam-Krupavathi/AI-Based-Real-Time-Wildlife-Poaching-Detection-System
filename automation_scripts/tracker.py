@@ -1,6 +1,6 @@
 # tracker.py
 """
-Multi-frame object tracker for SANJEEVANI.
+Multi-frame object tracker for AI-Based Real-Time Wildlife Poaching Detection System.
 Assigns consistent track IDs to detected bounding boxes and tracks active entities across frames
 to debounce alerts and prevent duplicate notifications for the same detected entity.
 """
