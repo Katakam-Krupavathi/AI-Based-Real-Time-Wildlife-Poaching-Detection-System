@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  sanjeevani-server:
+  wildlife-server:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: sanjeevani-command-center
+    container_name: wildlife-command-center
     restart: unless-stopped
     ports:
       - "5000:5000"
@@ -14,7 +14,7 @@ services:
       - FLASK_ENV=production
       - BBOX_PROXIMITY_PX=250
       - LORA_RSSI_THRESHOLD=-70.0
-      - LORA_SECRET_KEY=sanjeevani_lora_master_key_2026
+      - LORA_SECRET_KEY=lora_master_key_2026
       - LORA_DAILY_PASSCODE=RANGER_ALPHA_99
     volumes:
       - ./evidence:/app/evidence
