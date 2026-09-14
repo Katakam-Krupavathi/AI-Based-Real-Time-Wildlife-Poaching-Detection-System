@@ -119,6 +119,6 @@ class CentroidTracker:
                 obj_id = self.register(input_centroids[c], input_classes[c])
                 detections[c]['track_id'] = obj_id
                 detections[c]['is_new_alert'] = True
-                self.last_alert_timeKobj_id] = now
+                self.last_alert_time[obj_id] = now
 
         return detections
