@@ -1,4 +1,4 @@
-# SANJEEVANI: AI-Based Real-Time Wildlife Poaching Detection System
+# AI-Based Real-Time Wildlife Poaching Detection System
 # Multi-Modal Vision + Acoustic Surveillance Container
 
 FROM python:3.12-slim
