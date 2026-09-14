@@ -54,9 +54,96 @@ flowchart TD
     D1 & D2 & D3 --> E1 & E2 & E3 & E4
 ```
 
-> 📖 *For sequence diagrams, state machines, and hardware specifications, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).*
+---
+
+### 🔄 Multi-Modal Processing Sequence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Node as 📡 Edge Sensor Node
+    participant Server as 🖥️ Central Server
+    participant Vision as 👁️ YOLOv8 Detector
+    participant Audio as 🔊 Gunshot CNN
+    participant Tracker as 🎯 Centroid Tracker
+    participant Logic as ⚖️ Threat Arbitration
+    participant Dispatch as 🚨 SMS & Map Dispatch
+
+    Node->>Server: POST /process_multimodal (Image + Audio + RSSI + GPS)
+    par Visual Inference
+        Server->>Vision: Forward Image Frame
+        Vision-->>Server: Detections (boxes, classes, confidences)
+    and Acoustic Inference
+        Server->>Audio: Forward Audio Waveform
+        Audio-->>Server: Gunshot Probability (0.0 - 1.0)
+    end
+
+    Server->>Tracker: Update Object Centroids & Track IDs
+    Tracker-->>Server: Tracked Objects + is_new_alert Flags
+
+    Server->>Logic: Run Threat Arbitration (Vision + Audio + LoRa RSSI)
+    Note over Logic: Calculate Spatial Proximity<br/>Check Ranger RSSI >= -70 dBm<br/>Fuse Multi-Modal Threat Tier
+
+    alt Threat Tier 1 or Tier 2 (Critical / Gunshot)
+        Logic->>Dispatch: Trigger Emergency SMS to Rangers
+        Logic->>Dispatch: Save Annotated Evidence Image
+        Logic->>Dispatch: Re-render Folium Incident Map
+    else Threat Tier 4 (Ranger or Wildlife)
+        Logic->>Dispatch: Log Safe Telemetry to Dashboard
+    end
+
+    Server-->>Node: 200 OK (Decision, Fused Score, Urgency, Event Summary)
+```
 
 ---
+
+### 🚦 Threat Arbitration State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> Ingestion
+
+    state Ingestion {
+        [*] --> CheckAudio
+        [*] --> CheckVision
+    }
+
+    Ingestion --> GunshotDetected: Audio Prob >= 0.50
+    Ingestion --> VisualAnalysis: Audio Prob < 0.50
+
+    state VisualAnalysis {
+        [*] --> CheckClasses
+        CheckClasses --> RangerVerified: Human + Jacket OR RSSI >= -70dBm
+        CheckClasses --> ArmedPoacher: Human + Gun Proximity (< 250px)
+        CheckClasses --> Intruder: Human Only (No Beacon)
+        CheckClasses --> WildlifeSafe: Elephant Only
+    }
+
+    GunshotDetected --> Tier1_ArmedCombat: Intruder Also Visible
+    GunshotDetected --> Tier2_GunshotAlert: No Visual Target
+
+    ArmedPoacher --> Tier1_ArmedCombat
+    Intruder --> Tier3_PoacherIntrusion
+    RangerVerified --> Tier4_RangerMonitored
+    WildlifeSafe --> Tier4_NoThreat
+
+    Tier1_ArmedCombat --> CriticalResponse: SMS + Map + Forensic Evidence
+    Tier2_GunshotAlert --> HighResponse: SMS + Audio Evidence
+    Tier3_PoacherIntrusion --> MediumResponse: Forensic Evidence + Advisory
+    Tier4_RangerMonitored --> NormalLogging: Dashboard Log
+    Tier4_NoThreat --> NormalLogging: Baseline Safe
+```
+
+---
+
+### 🎯 Multi-Frame Centroid Tracking & Debounce Mechanism
+
+To eliminate duplicate alerts when entities remain in camera trap field-of-view across successive frames:
+
+1. **Centroid Registration**: Centroids $(C_x, C_y)$ are extracted for each detected bounding box.
+2. **Euclidean Association**: Detections are linked to existing track IDs by minimizing Euclidean centroid distance.
+3. **Alert Cooldown Window**: Each track ID maintains an `alert_cooldown_sec` (30s default) cooldown. Duplicate notifications are suppressed during the window.
+4. **Disappearance Purging**: Track IDs absent for more than `max_disappeared` frames (10 frames default) are automatically deregistered.
 
 ## 🎯 Key Features
 
