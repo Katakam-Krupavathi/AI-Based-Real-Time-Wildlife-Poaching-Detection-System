@@ -71,7 +71,7 @@ def run_scenario_2_wildlife(client):
     res = client.post('/process', data=data, content_type='multipart/form-data')
     result = res.get_json()
     print(f"Response: {json.dumps(result, indent=2)}")
-    print(f"{Colors.GREEN}[+] Processed: Threat Level -> {result.get('threat_level')} | Wildlife Logged Safe{Colors.ENDC}")
+    print(f"{Colors.GREEN}[+] Decision: {result.get('decision')} | Urgency: {result.get('urgency')} | Wildlife Logged Safe{Colors.ENDC}")
 
 def run_scenario_3_ranger_patrol(client):
     print(f"\n{Colors.HEADER}{Colors.BOLD}[SCENARIO 3] Ranger Patrol Detection (Human in Sector + Authorized LoRa Beacon RSSI -45 dBm){Colors.ENDC}")
@@ -89,7 +89,7 @@ def run_scenario_3_ranger_patrol(client):
     res = client.post('/process', data=data, content_type='multipart/form-data')
     result = res.get_json()
     print(f"Response: {json.dumps(result, indent=2)}")
-    print(f"{Colors.GREEN}[+] LoRa Deconfliction Verified: Threat Level -> {result.get('threat_level')} (Ranger Identified){Colors.ENDC}")
+    print(f"{Colors.GREEN}[+] LoRa Deconfliction Verified: Decision -> {result.get('decision')} (Ranger Identified){Colors.ENDC}")
 
 def run_scenario_4_poacher_alert(client):
     print(f"\n{Colors.HEADER}{Colors.BOLD}[SCENARIO 4] Poacher Incursion Alert (Visual Human + Weapon Detection, No LoRa Beacon){Colors.ENDC}")
@@ -107,7 +107,7 @@ def run_scenario_4_poacher_alert(client):
     res = client.post('/process', data=data, content_type='multipart/form-data')
     result = res.get_json()
     print(f"Response: {json.dumps(result, indent=2)}")
-    print(f"{Colors.WARNING}[!] Visual Threat: Level -> {result.get('threat_level')} | SMS Dispatched -> {result.get('sms_sent')}{Colors.ENDC}")
+    print(f"{Colors.WARNING}[!] Visual Threat: Decision -> {result.get('decision')} | Urgency -> {result.get('urgency')} | Fused Score -> {result.get('fused_score')}{Colors.ENDC}")
 
 def run_scenario_5_multimodal_combat(client):
     print(f"\n{Colors.HEADER}{Colors.BOLD}[SCENARIO 5] Multi-Modal Audio-Visual Combat Fusion (/process_multimodal){Colors.ENDC}")
@@ -129,15 +129,18 @@ def run_scenario_5_multimodal_combat(client):
     res = client.post('/process_multimodal', data=data, content_type='multipart/form-data')
     result = res.get_json()
     print(f"Response: {json.dumps(result, indent=2)}")
-    print(f"{Colors.FAIL}{Colors.BOLD}[!] Multi-Modal Fusion: Threat Level -> {result.get('threat_level')} | Confidence -> {result.get('composite_confidence')}{Colors.ENDC}")
+    print(f"{Colors.FAIL}{Colors.BOLD}[!] Multi-Modal Fusion: Decision -> {result.get('decision')} | Urgency -> {result.get('urgency')} | Audio Prob -> {result.get('audio_gunshot_probability')}{Colors.ENDC}")
 
 def run_scenario_6_dashboard_events(client):
     print(f"\n{Colors.HEADER}{Colors.BOLD}[SCENARIO 6] Verifying Command Center Dashboard & Live Events Feed (/api/events)...{Colors.ENDC}")
     res = client.get('/api/events')
     data = res.get_json()
-    print(f"Total Logged Incidents: {len(data)}")
-    if data:
-        print(f"Latest Incident: {json.dumps(data[-1], indent=2)}")
+    events = data.get('events', [])
+    stats = data.get('stats', {})
+    print(f"Total Logged Incidents: {len(events)}")
+    print(f"Aggregate Stats: {json.dumps(stats, indent=2)}")
+    if events:
+        print(f"Latest Incident: {json.dumps(events[0], indent=2)}")
     print(f"{Colors.GREEN}[+] Live Incident Telemetry successfully routed to Web Dashboard{Colors.ENDC}")
 
 def main():
