@@ -1,4 +1,4 @@
-# 🏛️ SANJEEVANI System Architecture & Technical Design
+# 🏛️ System Architecture & Technical Design
 
 ## 1. High-Level System Architecture
 
@@ -11,7 +11,7 @@ flowchart TD
         A4["🛰️ GPS Telemetry Unit"]
     end
 
-    subgraph CentralServer["🖥️ SANJEEVANI Central Command Server"]
+    subgraph CentralServer["🖥️ Central Command Server"]
         B1["🌐 REST Ingestion Engine (/process, /process_multimodal)"]
         
         subgraph AIInference["🧠 Multi-Modal AI Inference Pipeline"]
