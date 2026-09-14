@@ -209,7 +209,7 @@ def process_data():
 
         max_conf = max([e.get("confidence_pct", "N/A") for e in threat_events], default="N/A")
         message = (
-            f"🚨 SANJEEVANI ALERT: {decision}\n"
+            f"🚨 WILDLIFE POACHING ALERT: {decision}\n"
             f"Confidence: {max_conf}\n"
             f"Location: {lat}, {lon}\n"
             f"Signatures: {multimodal['summary']}"
@@ -312,7 +312,7 @@ def process_multimodal():
 
         generate_map(lat, lon)
         message = (
-            f"🚨 SANJEEVANI MULTI-MODAL ALERT: {decision}\n"
+            f"🚨 MULTI-MODAL POACHING ALERT: {decision}\n"
             f"Urgency: {multimodal['urgency']} (Score: {multimodal['fused_score']*100:.1f}%)\n"
             f"Location: {lat}, {lon}\n"
             f"{multimodal['summary']}"
