@@ -182,7 +182,7 @@ hsv_v = 0.4
 | Jacket | 0.631 | 1.00 | 0.995 | 0.796 |
 
 **Best model stored at**
-runs/detect/train17/weights/best.pt
+`best.pt` (repository root)
 
 
 ---
@@ -279,6 +279,26 @@ When a **poacher event is detected**:
 2️⃣ SMS alerts sent to rangers  
 3️⃣ LoRa alert transmitted  
 4️⃣ Event location updated on monitoring map  
+
+---
+
+## 🛠️ Quick Start & Setup
+
+### 1. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Environment Configuration
+Copy `.env.example` to `.env` and set your optional credentials:
+```bash
+cp .env.example .env
+```
+
+### 3. Run Central Server
+```bash
+python automation_scripts/central_server.py
+```
 
 ---
 
