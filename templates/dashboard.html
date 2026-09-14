@@ -3,6 +3,447 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SANJEEVANI — Real-Time Wildlife Protection Command Center</title>
+    <title>AI Wildlife Protection — Real-Time Command Center</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&target=display
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #121826;
+            --bg-card: rgba(26, 34, 52, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 24px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .title-group h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .title-group p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--accent-green);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            backdrop-filter: blur(12px);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 1.85rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-armed { color: var(--accent-red); }
+        .stat-gunshots { color: var(--accent-yellow); }
+        .stat-rangers { color: var(--accent-cyan); }
+        .stat-wildlife { color: var(--accent-green); }
+        .stat-total { color: var(--accent-blue); }
+
+        .dashboard-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(12px);
+        }
+
+        .panel-header {
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .map-container {
+            height: 480px;
+            width: 100%;
+            background: #0d131f;
+        }
+
+        .map-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .feed-container {
+            height: 480px;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .event-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .event-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .event-card.critical { border-left: 4px solid var(--accent-red); }
+        .event-card.high { border-left: 4px solid var(--accent-yellow); }
+        .event-card.info { border-left: 4px solid var(--accent-cyan); }
+        .event-card.safe { border-left: 4px solid var(--accent-green); }
+
+        .event-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .event-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge-critical { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+        .badge-high { background: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); }
+        .badge-info { background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); }
+        .badge-safe { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+
+        .event-time {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .event-desc {
+            color: var(--text-main);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .event-coords {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .evidence-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+        }
+
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+            padding: 16px;
+        }
+
+        .evidence-thumb {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #000;
+            aspect-ratio: 4/3;
+        }
+
+        .evidence-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .evidence-thumb:hover img {
+            transform: scale(1.05);
+        }
+
+        .evidence-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 6px 8px;
+            background: rgba(0, 0, 0, 0.75);
+            font-size: 0.7rem;
+            color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-group">
+            <div class="logo-badge">AI SURVEILLANCE</div>
+            <div class="title-group">
+                <h1>Wildlife Poaching Detection System</h1>
+                <p>Autonomous Multi-Modal IoT Surveillance Command Center</p>
+            </div>
+        </div>
+        <div class="status-pill">
+            <div class="status-dot"></div>
+            <span>LIVE MONITORING</span>
+        </div>
+    </header>
+
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Armed Poachers</div>
+            <div class="stat-value stat-armed" id="stat-armed">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Gunshots Detected</div>
+            <div class="stat-value stat-gunshots" id="stat-gunshots">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Ranger Patrols</div>
+            <div class="stat-value stat-rangers" id="stat-rangers">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Wildlife Sightings</div>
+            <div class="stat-value stat-wildlife" id="stat-wildlife">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Surveillance Events</div>
+            <div class="stat-value stat-total" id="stat-total">0</div>
+        </div>
+    </section>
+
+    <main class="dashboard-main">
+        <div class="panel">
+            <div class="panel-header">
+                <span>📍 Tactical GIS Surveillance Map</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Auto-Refreshed</span>
+            </div>
+            <div class="map-container">
+                <iframe class="map-frame" id="map-frame" src="/api/latest-map"></iframe>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span>⚡ Real-Time Incident Telemetry</span>
+                <span id="incident-count" style="font-size: 0.8rem; color: var(--text-muted);">0 events</span>
+            </div>
+            <div class="feed-container" id="feed-container">
+                <div style="text-align: center; color: var(--text-muted); padding: 40px 0;">
+                    Listening for edge sensor telemetry...
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="evidence-panel">
+        <div class="panel-header">
+            <span>📷 Forensic Visual Evidence Snapshots</span>
+            <span id="evidence-count" style="font-size: 0.8rem; color: var(--text-muted);">0 snapshots</span>
+        </div>
+        <div class="evidence-grid" id="evidence-grid">
+            <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 20px;">
+                No forensic threat captures logged yet.
+            </div>
+        </div>
+    </section>
+
+    <script>
+        async function fetchTelemetry() {
+            try {
+                const res = await fetch('/api/events');
+                if (!res.ok) return;
+                const data = await res.json();
+
+                // 1. Update stats
+                if (data.stats) {
+                    document.getElementById('stat-armed').innerText = data.stats.armed_poachers || 0;
+                    document.getElementById('stat-gunshots').innerText = data.stats.gunshots || 0;
+                    document.getElementById('stat-rangers').innerText = data.stats.rangers || 0;
+                    document.getElementById('stat-wildlife').innerText = data.stats.wildlife || 0;
+                    document.getElementById('stat-total').innerText = data.stats.total || 0;
+                }
+
+                // 2. Update events feed
+                const feed = document.getElementById('feed-container');
+                if (data.events && data.events.length > 0) {
+                    document.getElementById('incident-count').innerText = `${data.events.length} events`;
+                    feed.innerHTML = data.events.map(ev => {
+                        let cardClass = 'safe';
+                        let badgeClass = 'badge-safe';
+                        if (ev.urgency === 'CRITICAL') { cardClass = 'critical'; badgeClass = 'badge-critical'; }
+                        else if (ev.urgency === 'HIGH') { cardClass = 'high'; badgeClass = 'badge-high'; }
+                        else if (ev.urgency === 'INFO') { cardClass = 'info'; badgeClass = 'badge-info'; }
+
+                        return `
+                            <div class="event-card ${cardClass}">
+                                <div class="event-top">
+                                    <span class="event-badge ${badgeClass}">${ev.decision || 'EVENT'}</span>
+                                    <span class="event-time">${ev.timestamp || ''}</span>
+                                </div>
+                                <div class="event-desc">${ev.summary || 'Surveillance event registered'}</div>
+                                <div class="event-coords">Lat: ${ev.latitude || '0.0000'}, Lon: ${ev.longitude || '0.0000'} | Conf: ${ev.fused_score ? (ev.fused_score * 100).toFixed(1) + '%' : 'N/A'}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // 3. Update evidence snapshots
+                const grid = document.getElementById('evidence-grid');
+                if (data.recent_evidence && data.recent_evidence.length > 0) {
+                    document.getElementById('evidence-count').innerText = `${data.recent_evidence.length} snapshots`;
+                    grid.innerHTML = data.recent_evidence.map(img => `
+                        <div class="evidence-thumb">
+                            <a href="/evidence/${img}" target="_blank">
+                                <img src="/evidence/${img}" alt="Evidence" loading="lazy" />
+                            </a>
+                            <div class="evidence-caption">${img}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error fetching telemetry:', err);
+            }
+        }
+
+        // Poll telemetry every 4 seconds
+        setInterval(fetchTelemetry, 4000);
+        fetchTelemetry();
+
+        // Refresh map iframe every 15 seconds
+        setInterval(() => {
+            const mapFrame = document.getElementById('map-frame');
+            if (mapFrame) {
+                mapFrame.src = '/api/latest-map?t=' + new Date().getTime();
+            }
+        }, 15000);
+    </script>
+</body>
+</html>
