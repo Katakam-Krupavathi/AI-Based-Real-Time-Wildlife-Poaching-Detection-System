@@ -43,6 +43,9 @@ def print_banner():
 ================================================================================{Colors.ENDC}"""
     print(banner)
 
+def get_sample_path(filename):
+    return os.path.join(CFG_PROJECT_ROOT, "Dataset Samples", filename)
+
 def run_scenario_1_health(client):
     print(f"\n{Colors.HEADER}{Colors.BOLD}[SCENARIO 1] Running System Health & Subsystem Diagnostics (/health)...{Colors.ENDC}")
     res = client.get('/health')
@@ -54,7 +57,7 @@ def run_scenario_1_health(client):
 
 def run_scenario_2_wildlife(client):
     print(f"\n{Colors.HEADER}{Colors.BOLD}[SCENARIO 2] Baseline Wildlife Monitoring: Camera Trap Frame (Elephant Only){Colors.ENDC}")
-    sample_img = os.path.join(CFG_PROJECT_ROOT, "Dataset Samples", "sample_elephant.jpg")
+    sample_img = get_sample_path("elephant_ELEPHANT_4.jpg")
     with open(sample_img, "rb") as f:
         img_bytes = f.read()
 
@@ -72,7 +75,7 @@ def run_scenario_2_wildlife(client):
 
 def run_scenario_3_ranger_patrol(client):
     print(f"\n{Colors.HEADER}{Colors.BOLD}[SCENARIO 3] Ranger Patrol Detection (Human in Sector + Authorized LoRa Beacon RSSI -45 dBm){Colors.ENDC}")
-    sample_img = os.path.join(CFG_PROJECT_ROOT, "Dataset Samples", "sample_poacher.jpg")
+    sample_img = get_sample_path("forest_ranger_FOREST_RANGER_3_aug0.jpg")
     with open(sample_img, "rb") as f:
         img_bytes = f.read()
 
@@ -90,7 +93,7 @@ def run_scenario_3_ranger_patrol(client):
 
 def run_scenario_4_poacher_alert(client):
     print(f"\n{Colors.HEADER}{Colors.BOLD}[SCENARIO 4] Poacher Incursion Alert (Visual Human + Weapon Detection, No LoRa Beacon){Colors.ENDC}")
-    sample_img = os.path.join(CFG_PROJECT_ROOT, "Dataset Samples", "sample_poacher.jpg")
+    sample_img = get_sample_path("poacher_POACHER_4.jpg")
     with open(sample_img, "rb") as f:
         img_bytes = f.read()
 
@@ -108,8 +111,8 @@ def run_scenario_4_poacher_alert(client):
 
 def run_scenario_5_multimodal_combat(client):
     print(f"\n{Colors.HEADER}{Colors.BOLD}[SCENARIO 5] Multi-Modal Audio-Visual Combat Fusion (/process_multimodal){Colors.ENDC}")
-    sample_img = os.path.join(CFG_PROJECT_ROOT, "Dataset Samples", "sample_poacher.jpg")
-    sample_audio = os.path.join(CFG_PROJECT_ROOT, "Dataset Samples", "sample_gunshot.wav")
+    sample_img = get_sample_path("poacher_POACHER_IR_3.jpg")
+    sample_audio = get_sample_path("aug_gun_679_0.wav")
 
     with open(sample_img, "rb") as f_img, open(sample_audio, "rb") as f_aud:
         img_bytes = f_img.read()
