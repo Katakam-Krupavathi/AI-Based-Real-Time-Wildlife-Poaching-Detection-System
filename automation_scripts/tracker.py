@@ -99,7 +99,7 @@ class CentroidTracker:
             is_new = False
             if now - self.last_alert_time.get(obj_id, 0) > self.alert_cooldown_sec:
                 is_new = True
-                self.last_alert_timeKobj_id] = now
+                self.last_alert_time[obj_id] = now
 
             detections[min_c]['track_id'] = obj_id
             detections[min_c]['is_new_alert'] = is_new
