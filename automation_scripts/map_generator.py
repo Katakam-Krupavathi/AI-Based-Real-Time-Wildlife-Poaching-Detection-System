@@ -1,6 +1,9 @@
 # map_generator.py
 
+import sys
 import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 import config
 
 def generate_map(lat, lon, output_path=None):
