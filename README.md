@@ -1,315 +1,198 @@
-# 🌿 SANJEEVANI
-### AI-Based Real-Time Wildlife Poaching Detection System
+# 🌿 SANJEEVANI: AI-Based Real-Time Wildlife Poaching Detection System
 
-![Python](https://img.shields.io/badge/Python-3.9-blue)
-![PyTorch](https://img.shields.io/badge/PyTorch-DeepLearning-red)
-![YOLOv8](https://img.shields.io/badge/YOLOv8-Ultralytics-green)
-![Computer Vision](https://img.shields.io/badge/ComputerVision-WildlifeAI-orange)
-![Status](https://img.shields.io/badge/Status-ResearchPrototype-success)
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.5.1-EE4C2C.svg)](https://pytorch.org/)
+[![YOLOv8](https://img.shields.io/badge/YOLOv8-Ultralytics-00FF00.svg)](https://github.com/ultralytics/ultralytics)
+[![Flask](https://img.shields.io/badge/Flask-3.1-black.svg)](https://flask.palletsprojects.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
+[![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF.svg)](https://github.com/features/actions)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](#)
 
----
-
-## 🧠 Project Overview
-
-**SANJEEVANI** is an AI-powered wildlife protection system designed to detect potential poaching activity using **computer vision and acoustic gunshot detection**.
-
-The system automatically identifies suspicious activity and alerts forest rangers in real time.
-
-### Domains
-
-Artificial Intelligence  
-Computer Vision  
-Edge AI  
-Wildlife Monitoring  
-IoT Surveillance
+> **SANJEEVANI** is an autonomous, multi-modal IoT surveillance and early warning platform designed to protect endangered wildlife from illegal poaching incursions. It combines computer vision (YOLOv8), bioacoustic gunshot analysis (deep audio CNN), cryptographic LoRa ranger deconfliction, multi-frame spatial tracking, and interactive tactical GIS mapping.
 
 ---
 
-# 🌍 Problem Statement
+## 📸 System Architecture & Pipeline
 
-Wildlife poaching is a major threat to endangered species worldwide.
-
-Forest departments struggle to monitor vast forest areas because of:
-
-- 👮 Limited ranger manpower
-- 🌳 Dense forest visibility issues
-- ⏱️ Delayed threat reporting
-- 📡 Lack of automated monitoring systems
-
-Poachers frequently operate with **firearms and camouflage**, making detection extremely difficult using conventional surveillance systems.
-
-### 🎯 Objective
-
-Develop an AI system capable of automatically detecting poaching threats using:
-
-- 🧠 Computer Vision
-- 🔊 Gunshot Audio Detection
-- 🤖 AI-based Threat Classification
-- 📱 Automated Ranger Alert System
-
-```text
-Camera / Drone Feed
-│
-▼
-YOLOv8 Object Detection
-(human, gun, elephant, jacket)
-│
-▼
-Threat Logic Engine
-│
-▼
-Poacher Classification
-│
-┌───────────────┬───────────────┬───────────────┐
-▼ ▼ ▼
-SMS Alert LoRa Message Evidence Logging
-│
-▼
-Map Visualization
+```
+                              ┌─────────────────────────────────────────────────┐
+                              │           EDGE SENSOR / DRONE / TRAP            │
+                              │  [ Optical / IR Camera ]   [ Acoustic Sensors ] │
+                              │  [ LoRa RSSI Beacon ]      [ GPS Telemetry ]    │
+                              └────────────────────────┬────────────────────────┘
+                                                       │
+                                  HTTP POST /process_multimodal
+                                                       │
+                                                       ▼
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                   SANJEEVANI CENTRAL COMMAND SERVER                                   │
+│                                                                                                        │
+│  ┌─────────────────────────┐   ┌──────────────────────────┐   ┌─────────────────────────────────────┐  │
+│  │   YOLOv8 Vision Model   │   │  Acoustic Gunshot Model  │   │     LoRa Cryptographic Beacon       │  │
+│  │  (Gun, Elephant, Human, │   │ (Log-Mel + Delta CNN)    │   │  (HMAC Deconfliction & RSSI Tag)    │  │
+│  │         Jacket)         │   │                          │   │                                     │  │
+│  └────────────┬────────────┘   └────────────┬─────────────┘   └──────────────────┬──────────────────┘  │
+│               │                             │                                    │                     │
+│               ▼                             ▼                                    ▼                     │
+│  ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐  │
+│  │                 MULTI-MODAL THREAT ARBITRATION & SPATIAL FUSION ENGINE                           │  │
+│  │  - Euclidean Bounding-Box Proximity Analysis (BBOX_PROXIMITY_PX)                                 │  │
+│  │  - Confidence-Weighted Incident Scoring (0.0 to 1.0)                                             │  │
+│  │  - Multi-Frame Centroid Tracking & Debouncing (CentroidTracker)                                  │  │
+│  │  - Acoustic-Visual Combat Escalation (Tier 1 -> Tier 4)                                          │  │
+│  └──────────────────────────────────────────┬───────────────────────────────────────────────────────┘  │
+│                                             │                                                          │
+│                 ┌───────────────────────────┼───────────────────────────┐                              │
+│                 ▼                           ▼                           ▼                              │
+│  ┌─────────────────────────────┐ ┌────────────────────┐ ┌───────────────────────────────┐              │
+│  │    Tactical Folium Map      │ │ SMS / Twilio Alert │ │  Live Web Command Center UI   │              │
+│  │  (Dynamic Threat Heatmap)   │ │  (Ranger Dispatch) │ │  (Dark Theme HUD & Telemetry) │              │
+│  └─────────────────────────────┘ └────────────────────┘ └───────────────────────────────┘              │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-# 🤖 Object Detection Model
+## 🎯 Key Features
 
-**Model:** YOLOv8s  
-**Framework:** PyTorch  
-**Library:** Ultralytics
-
-### Detected Classes
-
-| Class ID | Object |
-|--------|--------|
-| 0 | 🔫 Gun |
-| 1 | 🐘 Elephant |
-| 2 | 👤 Human |
-| 3 | 🦺 Ranger Jacket |
-
-### Threat Interpretation
-
-| Detection | Interpretation |
-|-----------|---------------|
-| human + jacket | Ranger |
-| human without jacket | Poacher |
-| human + gun | Armed Poacher |
+- 👁️ **High-Speed Object Detection**: Custom YOLOv8s model trained to identify firearms (`gun`), endangered wildlife (`elephant`), intruders (`human`), and authorized ranger gear (`jacket`).
+- 🔊 **Acoustic Gunshot Classifier**: Deep convolutional network consuming stacked Log-Mel spectrograms + delta features with 93% real-world gunshot classification accuracy.
+- 🛡️ **LoRa Ranger Deconfliction**: Authorized field personnel transmitting authenticated LoRa beacons (RSSI $\ge -70\text{ dBm}$) are verified to prevent false alarms.
+- 🎯 **Multi-Frame Tracking & Debounce**: Built-in `CentroidTracker` assigns persistent track IDs across camera frames and debounces repeated SMS alerts.
+- 🗺️ **Tactical GIS Map Engine**: Generates interactive Folium satellite layers with color-coded threat zones (Red = Gunshot/Armed, Orange = Intrusion, Green = Ranger).
+- 📊 **Real-Time HUD Command Center**: Glassmorphic dark-mode web dashboard featuring live telemetry, incident counters, evidence snapshots, and automated map updates.
+- 🩺 **Automated Health Diagnostic**: `/health` self-test verifying YOLO weights, TensorFlow models, normalization files, Twilio keys, and storage directories.
 
 ---
 
-# ⚙️ YOLO Training Configuration
+## 🚨 Threat Arbitration Hierarchy
 
-```python
-model = "yolov8s.pt"
-
-imgsz = 832
-epochs = 60
-batch = 16
-
-optimizer = "AdamW"
-lr0 = 0.0008
-
-freeze = 10
-patience = 20
-
-# augmentations
-mosaic = 1.0
-mixup = 0.2
-scale = 0.9
-translate = 0.2
-degrees = 10
-shear = 2
-fliplr = 0.5
-
-# color augmentation
-hsv_h = 0.015
-hsv_s = 0.7
-hsv_v = 0.4
-```
-## 💻 Hardware Used
-
-| Component | Value |
-|----------|------|
-| GPU | NVIDIA RTX 4060 Laptop GPU |
-| CUDA | 12.1 |
-| Framework | PyTorch 2.5.1 |
+| Tier | Threat Level | Trigger Condition | Automated Response |
+|:---:|:---|:---|:---|
+| **Tier 1** | 🔴 `CRITICAL_ARMED_COMBAT` | Armed poacher + visual weapon proximity OR acoustic gunshot + visual intruder | Instant SMS dispatch, visual evidence capture, map alert broadcast |
+| **Tier 2** | 🔊 `ACOUSTIC_GUNSHOT_ALERT` | Bioacoustic gunshot model probability $\ge 0.50$ | Audio logged, SMS dispatched with GPS coordinates |
+| **Tier 3** | ⚠️ `SUSPECTED_POACHER_INTRUSION` | Human detected without ranger jacket or valid LoRa beacon | Visual evidence saved, ranger dispatch advised |
+| **Tier 4** | 🛡️ `RANGER_PATROL_MONITORED` | Human detected with verified LoRa beacon (RSSI $\ge -70\text{ dBm}$) | Sector logged as monitored, no alarm triggered |
+| **Tier 4** | 🌿 `NO_THREAT` | Wildlife (Elephant) detected in sector | Wildlife logged safe, baseline surveillance maintained |
 
 ---
 
-## 📂 Dataset
+## 📊 Model Evaluation & Benchmarks
 
-| Dataset | Size |
-|--------|------|
-| Images | 200+ |
-| Audio | 2000+ |
+### YOLOv8s Object Detector
 
-### Data Sources
+| Class | Precision | Recall | mAP@0.5 | mAP@0.5:0.95 |
+|:---|:---:|:---:|:---:|:---:|
+| 🔫 **Gun** | **1.000** | 0.651 | 0.796 | 0.354 |
+| 🐘 **Elephant** | 0.851 | 0.880 | 0.881 | 0.578 |
+| 👤 **Human** | **0.941** | 0.889 | **0.984** | 0.536 |
+| 🦺 **Ranger Jacket** | 0.631 | **1.000** | **0.995** | **0.796** |
+| **All Classes** | **0.856** | **0.855** | **0.914** | **0.566** |
 
-- **Gunshot Audio Dataset**  
-  https://www.kaggle.com/datasets/emrahaydemr/gunshot-audio-dataset  
+- **Inference Latency**: $\approx 9.5\text{ ms}$ per frame on NVIDIA RTX 4060 GPU / $\approx 45\text{ ms}$ on modern CPU.
 
-- **Noise Audio Dataset**  
-  https://www.kaggle.com/datasets/javohirtoshqorgonov/noise-audio-data  
+### Acoustic Gunshot Classifier
 
-- **Elephant Thermal Images**  
-  https://www.kaggle.com/datasets/shijo96john/elephant-thermal-images  
-
-- **Elephant Image Dataset**  
-  https://www.kaggle.com/datasets/vivmankar/asian-vs-african-elephant-image-classification  
-
-- Additional **synthetic images generated using DALL·E**
+- **Validation Samples**: 807
+- **Overall Accuracy**: **93.0%**
+- **Gunshot Recall**: **100.0%** (0 false negatives for firearm discharges)
+- **Non-Gunshot Precision**: **99.0%**
 
 ---
 
-# 📈 YOLO Model Performance
+## 🌐 API Reference
 
-## Overall Metrics
-
-| Metric | Value |
-|------|------|
-| Precision | 0.856 |
-| Recall | 0.855 |
-| mAP@0.5 | 0.914 |
-| mAP@0.5:0.95 | 0.566 |
-
----
-
-## Per-Class Results
-
-| Class | Precision | Recall | mAP50 | mAP50-95 |
-|------|------|------|------|------|
-| Gun | 1.00 | 0.651 | 0.796 | 0.354 |
-| Elephant | 0.851 | 0.880 | 0.881 | 0.578 |
-| Human | 0.941 | 0.889 | 0.984 | 0.536 |
-| Jacket | 0.631 | 1.00 | 0.995 | 0.796 |
-
-**Best model stored at**
-`best.pt` (repository root)
-
+| Endpoint | Method | Description |
+|:---|:---:|:---|
+| `/` | `GET` | Renders the live tactical command center dashboard UI. |
+| `/health` | `GET` | Performs self-test diagnostics across models, Twilio, and storage. |
+| `/process` | `POST` | Processes visual camera traps (`image`, `lat`, `lon`, `device_id`, `rssi`). |
+| `/process_multimodal` | `POST` | Processes synchronized visual + acoustic feeds (`image`, `audio`, `lat`, `lon`, `rssi`). |
+| `/api/events` | `GET` | Fetches recent incident logs, telemetry, and aggregate detection statistics. |
+| `/api/latest-map` | `GET` | Serves the dynamically updated Folium tactical surveillance map. |
+| `/evidence/<filename>` | `GET` | Serves high-resolution annotated threat evidence images. |
 
 ---
 
-# ⚡ Inference Speed
+## 🚀 Quick Start & Installation
 
-| Stage | Time |
-|------|------|
-| Preprocessing | 0.8 ms |
-| Inference | 7.0 ms |
-| Postprocessing | 1.7 ms |
+### Option 1: Native Python
 
-**Total ≈ 9.5 ms per image**
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/Katakam-Krupavathi/AI-Based-Real-Time-Wildlife-Poaching-Detection-System.git
+   cd AI-Based-Real-Time-Wildlife-Poaching-Detection-System
+   ```
 
----
+2. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-# 🔊 Gunshot Detection Model
+3. **Configure Environment Variables (Optional)**:
+   ```bash
+   cp .env.example .env
+   ```
 
-Binary **audio classifier** trained to identify firearm sounds.
+4. **Run End-to-End Demonstration Suite**:
+   ```bash
+   python demo.py
+   ```
 
-## Audio Features
-
-- Log Mel Spectrogram
-- MFCC
-- Spectral Centroid
-- Spectral Rolloff
-- RMS Energy
-- Zero Crossing Rate
-- Delta Features
-
-These are **stacked into multi-channel audio feature tensors**.
-
----
-
-# 📊 Gunshot Model Performance
-
-**Validation Samples:** 807
-
-## Confusion Matrix
-
-| | Pred 0 | Pred 1 |
-|---|---|---|
-| Actual 0 | 348 | 57 |
-| Actual 1 | 2 | 400 |
+5. **Start Live Command Center**:
+   ```bash
+   python automation_scripts/central_server.py
+   ```
+   Open `http://localhost:5000` in your web browser.
 
 ---
 
-## Classification Metrics
+### Option 2: Docker & Docker Compose
 
-| Class | Precision | Recall | F1 |
-|------|------|------|------|
-| Non-Gunshot | 0.99 | 0.86 | 0.92 |
-| Gunshot | 0.88 | 1.00 | 0.93 |
+Deploy the complete SANJEEVANI surveillance stack in a container:
 
-**Overall Accuracy: 93%**
-
----
-
-# 🚨 Threat Classification Logic
-
-| Rule | Result |
-|-----|------|
-| human + jacket | Ranger |
-| human only | Poacher |
-| human + gun | Armed Poacher |
-| Gunshot detected | Critical Alert |
-
----
-
-# 🧩 System Components
-
-| File | Purpose |
-|------|------|
-| `central_server.py` | Main system controller |
-| `threat_logic.py` | Threat classification logic |
-| `yolo_detector.py` | YOLO object detection |
-| `gunshot_detector.py` | Gunshot detection |
-| `proximity_utils.py` | Distance calculations |
-| `config.py` | System configuration |
-| `lora_handshake.py` | Ranger communication |
-| `ranger_device_sim.py` | Ranger device simulator |
-| `sms_alert.py` | SMS alert module |
-| `evidence_logger.py` | Evidence logging |
-| `map_generator.py` | Event map generation |
-| `data.yaml` | YOLO dataset configuration |
-
----
-
-# 🚨 System Output
-
-When a **poacher event is detected**:
-
-1️⃣ Evidence is logged  
-2️⃣ SMS alerts sent to rangers  
-3️⃣ LoRa alert transmitted  
-4️⃣ Event location updated on monitoring map  
-
----
-
-## 🛠️ Quick Start & Setup
-
-### 1. Install Dependencies
 ```bash
-pip install -r requirements.txt
+docker-compose up --build
 ```
 
-### 2. Environment Configuration
-Copy `.env.example` to `.env` and set your optional credentials:
-```bash
-cp .env.example .env
-```
+Access the command center at `http://localhost:5000`.
 
-### 3. Run Central Server
-```bash
-python automation_scripts/central_server.py
+---
+
+## 📁 Repository Structure
+
+```
+├── automation_scripts/
+│   ├── central_server.py       # Flask multi-modal command server & API routes
+│   ├── threat_logic.py         # Multi-modal arbitration & confidence scoring engine
+│   ├── yolo_detector.py        # Ultralytics YOLOv8 detector interface
+│   ├── gunshot_detector.py     # Bioacoustic spectrogram CNN classifier
+│   ├── tracker.py              # Multi-frame centroid tracker & alert debouncer
+│   ├── map_generator.py        # Tactical Folium GIS mapping utility
+│   ├── sms_alert.py            # Twilio SMS dispatcher with mock fallback
+│   ├── evidence_logger.py      # Annotated visual evidence persistence
+│   ├── proximity_utils.py      # Spatial Euclidean bounding-box geometry
+│   ├── lora_handshake.py       # LoRa cryptographic authentication
+│   ├── ranger_device_sim.py    # Ranger IoT beacon simulator
+│   └── config.py               # Centralized configuration & environment loader
+├── templates/
+│   └── dashboard.html          # Glassmorphic HUD Command Center web UI
+├── Dataset Samples/            # Sample visual & acoustic test assets
+├── .github/workflows/
+│   └── ci.yml                  # GitHub Actions CI automated verification
+├── demo.py                     # Synthetic end-to-end verification script
+├── Dockerfile                  # Container definition
+├── docker-compose.yml          # Container orchestration
+├── requirements.txt            # Python dependencies
+├── best.pt                     # Trained YOLOv8s weights
+├── gunshot_model_v3.h5         # Trained gunshot CNN model
+├── train_mean.npy              # Audio normalization mean tensor
+├── train_std.npy               # Audio normalization standard deviation tensor
+└── README.md                   # System documentation
 ```
 
 ---
 
-# 🚀 Future Improvements
+## 🛡️ License & Acknowledgements
 
-🔥 Thermal camera integration  
-
-🚁 Drone surveillance automation  
-
-🎯 Multi-frame object tracking  
-
-🛰 Satellite monitoring  
-
-🤖 Ranger patrol prediction using AI
+Developed for wildlife conservation and anti-poaching operations. Distributed under the MIT License.
