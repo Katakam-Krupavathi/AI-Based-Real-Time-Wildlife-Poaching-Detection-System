@@ -1,12 +1,23 @@
 # yolo_detector.py
 
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from ultralytics import YOLO
 import config
 
-model = YOLO(config.YOLO_MODEL_PATH)
+_model = None
+
+def get_yolo_model():
+    global _model
+    if _model is None:
+        _model = YOLO(config.YOLO_MODEL_PATH)
+    return _model
 
 def detect_objects(frame, conf=0.43, iou=0.5):
-    results = model.predict(frame, conf=conf, iou=iou)
+    model = get_yolo_model()
+    results = model.predict(frame, conf=conf, iou=iou, verbose=False)
     detections = []
 
     for r in results:
