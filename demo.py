@@ -1,5 +1,5 @@
 """
-SANJEEVANI: AI-Based Real-Time Wildlife Poaching Detection System
+AI-Based Real-Time Wildlife Poaching Detection System
 End-to-End Synthetic Demonstration and Verification Script
 
 This script walks through 6 core operational surveillance scenarios:
@@ -38,8 +38,8 @@ class Colors:
 def print_banner():
     banner = f"""
 {Colors.CYAN}{Colors.BOLD}================================================================================
-  SANJEEVANI -- AI-BASED REAL-TIME WILDLIFE POACHING DETECTION SYSTEM
-            Autonomous Multi-Modal IoT Surveillance Command Center
+  AI-BASED REAL-TIME WILDLIFE POACHING DETECTION SYSTEM
+         Autonomous Multi-Modal IoT Surveillance Command Center
 ================================================================================{Colors.ENDC}"""
     print(banner)
 
@@ -160,7 +160,7 @@ def main():
         run_scenario_6_dashboard_events(client)
     
     print(f"\n{Colors.GREEN}{Colors.BOLD}================================================================================")
-    print("  [SUCCESS] ALL SANJEEVANI SURVEILLANCE & AI SCENARIOS VERIFIED!")
+    print("  [SUCCESS] ALL SURVEILLANCE & AI TEST SCENARIOS VERIFIED!")
     print(f"================================================================================{Colors.ENDC}\n")
 
 if __name__ == '__main__':
