@@ -30,10 +30,17 @@ def get_model():
     if _model is None:
         if not os.path.exists(config.GUNSHOT_MODEL_PATH):
             raise FileNotFoundError(f"Gunshot model not found at {config.GUNSHOT_MODEL_PATH}")
-        _model = tf.keras.models.load_model(
-            config.GUNSHOT_MODEL_PATH,
-            custom_objects={"loss": focal_loss(), "focal_loss": focal_loss()}
-        )
+        try:
+            _model = tf.keras.models.load_model(
+                config.GUNSHOT_MODEL_PATH,
+                custom_objects={"loss": focal_loss(), "focal_loss": focal_loss()},
+                compile=False
+            )
+        except Exception:
+            _model = tf.keras.models.load_model(
+                config.GUNSHOT_MODEL_PATH,
+                compile=False
+            )
     return _model
 
 def get_norm_stats():
